@@ -1,13 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './index.css'
-import LoginPage from "./pages/auth/LoginPage";
+import { AuthProvider } from "./contexts/AuthContext";
+import LoginPage from './pages/auth/LoginPage';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return <LoginPage />;
-}
+const App = () => {
+  return (
+    <AuthProvider>
+      <LoginPage />
+    </AuthProvider>
+  );
+};
 
 export default App

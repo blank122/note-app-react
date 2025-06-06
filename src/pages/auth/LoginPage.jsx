@@ -2,83 +2,33 @@ import { useState } from "react";
 import { InputField } from "../../components/InputField";
 import { SubmitButton } from "../../components/SubmitButton";
 import { Card, CardContent } from "../../components/ui/card";
-import axios from "axios";
+import { loginUser } from "../../services/authService";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginPage() {
+    const { login } = useAuth(); // login here is from context
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [user, setUser] = useState(
-        JSON.parse(localStorage.getItem("user")) || null
-    );
-    const [token, setToken] = useState(localStorage.getItem("token") || "");
-
-    const API_BASE_URL = " http://localhost:3000/api";
-
-    const login = async ({ email, password }) => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/login`,
-                { email, password },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                    },
-                }
-            );
-
-            if (response.data.token && response.data.user) {
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.user));
-                setUser(response.data.user);
-                setToken(response.data.token);
-                return {
-                    success: true,
-                    ...response.data,
-                };
-            } else {
-                return { success: false, message: response.data.message };
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            return {
-                success: false,
-                message:
-                    error.response?.data?.error ||
-                    error.response?.data?.message ||
-                    error.message ||
-                    "Login failed",
-            };
-        }
-    };
 
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
         setLoading(true);
-        try {
-            // Pass email and password as an object
-            const data = await login({ email, password });
 
-            console.log("Login Response:", data); // Debugging step
+        const res = await loginUser({ email, password });
 
-            if (!data.success || !data.user) {
-                throw new Error(data.message || "Invalid response from server");
-            }
-
-            if (data.success) {
-                alert(`Login Successfully!`);
-            } else {
-                alert(`Something went wrong!`);
-            }
-        } catch (err) {
-            setError(err.message || "Invalid credentials");
-        } finally {
-            setLoading(false);
+        if (res.success) {
+            login(res.user, res.token); // update context + localStorage
+            alert("Login successful");
+        } else {
+            setError(res.message || "Login failed");
         }
+
+        setLoading(false);
     };
 
     return (
