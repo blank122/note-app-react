@@ -9,6 +9,10 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [user, setUser] = useState(
+        JSON.parse(localStorage.getItem("user")) || null
+    );
+    const [token, setToken] = useState(localStorage.getItem("token") || "");
 
     const API_BASE_URL = " http://localhost:3000/api";
 
@@ -25,28 +29,31 @@ export default function LoginPage() {
                 }
             );
 
-            if (response.data.success) {
+            if (response.data.token && response.data.user) {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.user));
                 setUser(response.data.user);
                 setToken(response.data.token);
-                // Redirect based on account_type
-                return response.data;
+                return {
+                    success: true,
+                    ...response.data,
+                };
             } else {
                 return { success: false, message: response.data.message };
             }
         } catch (error) {
-            console.error("Login error:", error); // Debug log
+            console.error("Login error:", error);
             return {
                 success: false,
                 message:
-                    error.response?.data?.error || // Laravel-style or custom error
-                    error.response?.data?.message || // Generic message
-                    error.message || // Axios error message
+                    error.response?.data?.error ||
+                    error.response?.data?.message ||
+                    error.message ||
                     "Login failed",
             };
         }
     };
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
