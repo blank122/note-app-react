@@ -1,11 +1,12 @@
 import './index.css'
 import { AuthProvider } from "./contexts/AuthContext";
-import LoginPage from './pages/auth/LoginPage';
+import { Outlet } from "react-router-dom";
+import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
   return (
     <AuthProvider>
-      <LoginPage />
+      <AppRoutes />
     </AuthProvider>
   );
 };
