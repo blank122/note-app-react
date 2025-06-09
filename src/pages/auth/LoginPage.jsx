@@ -5,7 +5,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { loginUser } from "../../services/authService";
 import { useAuth } from "../../contexts/AuthContext";
 import { CustomAlert } from "../../components/CustomAlert";
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
     const { login } = useAuth(); // login here is from context
@@ -16,6 +16,7 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const [alertInfo, setAlertInfo] = useState(null);
 
+    const navigate = useNavigate();
 
 
     const handleLogin = async (e) => {
@@ -32,7 +33,7 @@ export default function LoginPage() {
                 type: "success",
                 message: "You have successfully logged in.",
             });
-            Navigate('/dashboard');
+            navigate('/dashboard');
             
         } else {
             setError(res.message || "Login failed");
